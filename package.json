@@ -1,0 +1,25 @@
+{
+  "name": "@flipeador/node.js-promise-ex",
+  "description": "Extended promise utilities.",
+  "version": "1.0.0",
+  "keywords": [
+    "javascript",
+    "node-js",
+    "async-await",
+    "promise"
+  ],
+  "license": "gpl-3.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flipeador/node.js-promise-ex.git"
+  },
+  "author": "Flipeador (https://github.com/flipeador)",
+  "bugs": {
+    "url": "https://github.com/flipeador/node.js-promise-ex/issues"
+  },
+  "homepage": "https://github.com/flipeador/node.js-promise-ex#readme"
+}

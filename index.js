@@ -1,5 +1,6 @@
 ﻿'use strict';
 
+const util = require('node:util');
 const { setTimeout } = require('node:timers');
 
 function call(fn)
@@ -8,13 +9,19 @@ function call(fn)
     catch (error) { console.error(error); }
 }
 
-class PromiseError extends Error { }
+class PromiseError extends Error
+{
+    constructor(message, ...args)
+    {
+        super(util.format(message, ...args.map(x => util.inspect(x))));
+    }
+}
 
 class PromiseTimeout extends PromiseError
 {
     constructor(timeout)
     {
-        super(`Promise timed out after ${timeout} ms`);
+        super('Promise timed out after %s ms', timeout);
     }
 }
 
@@ -32,10 +39,11 @@ class PromiseEx extends Promise
      * @param {Function} callback `Function(resolveFn, rejectFn)`.
      * @param {Object} options Options.
      * @param {Number} options.timeout Rejects with {@link PromiseTimeout} once the timeout expires.
+     * @param {Function} options.onEvent Function called when the promise resolves, rejects or expires.
+     * @param {Function} options.onSettled Function called when the promise is fulfilled or rejected.
      * @param {Function} options.onResolve Function called when the promise is fulfilled.
      * @param {Function} options.onReject Function called when the promise is rejected.
      * @param {Function} options.onTimeout Function called when the promise has expired.
-     * @param {Function} options.onEvent Function called when the promise resolves, rejects or expires.
      * @param {Array} options.args List of arguments that receive the events.
      */
     constructor(callback, options)
@@ -101,6 +109,8 @@ class PromiseEx extends Promise
 
         this.#emit(event, value, options);
 
+        call(() => options?.onSettled?.call(this, value, ...options?.args??[]));
+
         this.resolve = () => undefined;
         this.reject = () => undefined;
 
@@ -144,7 +154,7 @@ class PromiseSync
     #execute(callback, resolveOnReturn, resolveOnError)
     {
         if (typeof(callback) !== 'function')
-            throw PromiseError(`Invalid callback function: ${callback}`);
+            throw PromiseError('Invalid callback function: %s', callback);
         return new Promise((resolve, reject) => {
             const reject2 = resolveOnError ? resolve : reject;
             this.promise = this.promise.then(() => {

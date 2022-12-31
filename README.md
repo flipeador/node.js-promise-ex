@@ -23,10 +23,10 @@ function onEvent(value)
     switch (this.state)
     {
         case 'fulfilled':
-            console.log(`The promise has been resolved with:`, value);
+            console.log('The promise has been resolved with:', value);
             break;
         case 'rejected':
-            console.log(`The promise has been rejected with:`, value.message);
+            console.log('The promise has been rejected with:', value.message);
             break;
         default: // timeout
             // By default, when a promise expires, it is rejected with PromiseTimeout error.
@@ -74,7 +74,7 @@ const { PromiseEx } = require('@flipeador/node.js-promise-ex');
 
 (async () => {
     const promise = new PromiseEx({
-        onResolve: function(value, hello, world) {
+        onResolve(value, hello, world) {
             this.result = `${hello} ${world}${value}`; // (1)
         },
         args: ['Hello', 'World']
@@ -153,7 +153,7 @@ async function asyncFn(index)
 {
     console.log(await new Promise(async (resolve) => {
         await PromiseEx.sleep(index & 1 ? 100 : 50);
-        resolve(`asyncFn: Index #${index}`)
+        resolve(`asyncFn: Index #${index}`);
     }));
 }
 
@@ -161,7 +161,7 @@ async function asyncSyncFn(index)
 {
     console.log(await psync.run(async (resolve) => {
         await PromiseEx.sleep(index & 1 ? 100 : 50);
-        resolve(`asyncSyncFn: Index #${index}`)
+        resolve(`asyncSyncFn: Index #${index}`);
     }));
 }
 

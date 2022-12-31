@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 const util = require('node:util');
 const { setTimeout } = require('node:timers');
@@ -48,8 +48,10 @@ class PromiseEx extends Promise
      */
     constructor(callback, options)
     {
-        if (typeof(callback) !== 'function' && options === undefined)
-            options = callback, callback = undefined;
+        if (typeof(callback) !== 'function' && options === undefined) {
+            options = callback;
+            callback = undefined;
+        }
 
         const obj = {};
         super((resolve, reject) => Object.assign(obj, {resolve, reject}));
@@ -124,7 +126,7 @@ class PromiseEx extends Promise
  */
 class PromiseSync
 {
-    promise = Promise.resolve()
+    promise = Promise.resolve();
 
     /**
      * Execute a function and block until it returns, resolves or rejects.
@@ -154,7 +156,7 @@ class PromiseSync
     #execute(callback, resolveOnReturn, resolveOnError)
     {
         if (typeof(callback) !== 'function')
-            throw PromiseError('Invalid callback function: %s', callback);
+            throw new PromiseError('Invalid callback function: %s', callback);
         return new Promise((resolve, reject) => {
             const reject2 = resolveOnError ? resolve : reject;
             this.promise = this.promise.then(() => {
@@ -166,7 +168,7 @@ class PromiseSync
                         );
                         if (resolveOnReturn) _resolve(resolve(retval));
                     } catch (error) {
-                        _resolve(reject2(error))
+                        _resolve(reject2(error));
                     }
                 });
             });
@@ -188,8 +190,10 @@ class PromiseSync
             if (callback) await callback(...args);
             return promise = promise.then(async () => {
                 if (cache && (!check || await check(cache.result)))
+                    // eslint-disable-next-line require-atomic-updates
                     return cache.result = await fn(...args);
-                else cache = undefined;
+                // eslint-disable-next-line require-atomic-updates
+                cache = undefined;
             });
         };
     }
